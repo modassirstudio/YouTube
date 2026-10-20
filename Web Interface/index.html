@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SQL, Excel, Python and CSC scholarship preparation practice report.">
+  <title>Technical Practice & CSC Preparation Report</title>
+  <link rel="stylesheet" href="style_web.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">LEARNING JOURNAL · PRACTICE REPORT</p>
+      <h1>Technical Practice &amp;<br><span>CSC Preparation</span></h1>
+      <p class="hero-copy">A structured record of SQL, Excel, Python and scholarship preparation — including solutions, progress notes and topics to revisit.</p>
+      <div class="hero-tags"><span>SQL</span><span>Microsoft Excel</span><span>Python</span><span>CSC Scholarship</span></div>
+    </div>
+  </header>
+
+  <nav class="section-nav" aria-label="Page sections">
+    <a href="#overview">Overview</a><a href="#sql">SQL</a><a href="#excel">Excel</a><a href="#python">Python</a><a href="#csc">CSC Review</a><a href="#review">Review List</a>
+  </nav>
+
+  <main class="container">
+    <section id="overview" class="section">
+      <div class="section-heading"><div><p class="eyebrow">01 / SUMMARY</p><h2>Study overview</h2></div><span class="section-number">01</span></div>
+      <div class="stats-grid">
+        <article class="stat-card"><span class="stat-label">Technical areas</span><strong>03</strong><p>SQL · Excel · Python</p></article>
+        <article class="stat-card"><span class="stat-label">SQL exercises</span><strong>15</strong><p>Basics through window functions</p></article>
+        <article class="stat-card"><span class="stat-label">Excel exercises</span><strong>15</strong><p>Lookups, formulas and concepts</p></article>
+        <article class="stat-card"><span class="stat-label">CSC focus</span><strong>2027</strong><p>Research proposal and documents</p></article>
+      </div>
+      <div class="callout"><strong>Purpose</strong><p>Use this page as a revision log. Keep the original attempts, review the notes marked “Check this,” and update the page as you improve your answers.</p></div>
+    </section>
+
+    <section id="sql" class="section">
+      <div class="section-heading"><div><p class="eyebrow">02 / DATABASES</p><h2>SQL practice</h2><p class="section-intro">Queries covering filtering, aggregation, joins and advanced SQL.</p></div><span class="section-number">02</span></div>
+
+      <div class="subsection"><h3><span class="pill">Part 1</span> Basics</h3>
+        <article class="exercise"><h4>1. Products priced above 100</h4><pre><code>SELECT name AS Products
+FROM products
+WHERE price &gt; 100;</code></pre><p class="status good">Correct approach</p></article>
+        <article class="exercise"><h4>2. First five customers alphabetically</h4><pre><code>SELECT name
+FROM customers
+ORDER BY name ASC
+LIMIT 5;</code></pre><p class="status review">Check this: use ASC for A–Z and LIMIT 5 to return only five rows.</p></article>
+        <article class="exercise"><h4>3. Sales during September 2026</h4><pre><code>SELECT *
+FROM sales
+WHERE sale_date &gt;= '2026-09-01'
+  AND sale_date &lt;  '2026-10-01';</code></pre><p class="status good">Recommended date-range pattern</p><p class="muted">This includes all times on September 30 when sale_date is a datetime column.</p></article>
+        <article class="exercise"><h4>4. Count all sales</h4><pre><code>SELECT COUNT(*) AS Number_of_Sales
+FROM sales;</code></pre><p class="status good">Correct</p></article>
+      </div>
+
+      <div class="subsection"><h3><span class="pill">Part 2</span> Aggregation</h3>
+        <article class="exercise"><h4>5. Total sales amount by category, highest first</h4><pre><code>SELECT p.category AS Category,
+       SUM(s.amount) AS Total_Sales_Amount
+FROM products p
+INNER JOIN sales s
+    ON p.product_id = s.product_id
+GROUP BY p.category
+ORDER BY Total_Sales_Amount DESC;</code></pre><p class="status good">Correct approach</p></article>
+        <article class="exercise"><h4>6. Average quantity sold per product</h4><pre><code>SELECT p.name AS Product,
+       AVG(s.quantity) AS Average_Quantity_Per_Product
+FROM products p
+INNER JOIN sales s
+    ON p.product_id = s.product_id
+GROUP BY p.product_id, p.name;</code></pre><p class="status good">Correct approach</p></article>
+        <article class="exercise"><h4>7. Count sales per customer</h4><pre><code>SELECT c.name AS Customer,
+       COUNT(*) AS Count_of_Sales
+FROM customers c
+INNER JOIN sales s
+    ON c.customer_id = s.customer_id
+GROUP BY c.customer_id, c.name;</code></pre><p class="status good">Correct for customers who have at least one sale</p></article>
+        <article class="exercise"><h4>8. Highest sale amount for each calendar date</h4><pre><code>SELECT sale_date,
+       MAX(amount) AS Highest_Amount
+FROM sales
+GROUP BY sale_date
+ORDER BY sale_date;</code></pre><p class="status review">Check this: DAYNAME(sale_date) groups every Monday together. Group by sale_date to get the maximum for each date.</p></article>
+      </div>
+
+      <div class="subsection"><h3><span class="pill">Part 3</span> Joins</h3>
+        <article class="exercise"><h4>9. Sales with customer and product names</h4><pre><code>SELECT c.name AS Customer,
+       p.name AS Product,
+       s.*
+FROM sales s
+INNER JOIN products p
+    ON s.product_id = p.product_id
+INNER JOIN customers c
+    ON s.customer_id = c.customer_id;</code></pre><p class="status good">Correct approach</p></article>
+        <article class="exercise"><h4>10. Every customer and their total spending, including zero</h4><pre><code>SELECT c.name AS Customer,
+       COALESCE(SUM(s.amount), 0) AS Total_Spending
+FROM customers c
+LEFT JOIN sales s
+    ON c.customer_id = s.customer_id
+GROUP BY c.customer_id, c.name;</code></pre><p class="status review">Your LEFT JOIN idea was right. COALESCE changes NULL to 0 for customers with no sales.</p></article>
+        <article class="exercise"><h4>11. Every product and its total revenue, including zero sales</h4><pre><code>SELECT p.name AS Product,
+       COALESCE(SUM(s.amount), 0) AS Revenue
+FROM products p
+LEFT JOIN sales s
+    ON p.product_id = s.product_id
+GROUP BY p.product_id, p.name;</code></pre><p class="status review">Use COALESCE so products with no sales display 0 rather than NULL.</p></article>
+        <article class="exercise"><h4>12. Products that have never been sold</h4><pre><code>SELECT p.name AS Product
+FROM products p
+LEFT JOIN sales s
+    ON p.product_id = s.product_id
+WHERE s.sale_id IS NULL;</code></pre><p class="status good">Correct if sale_id is a non-null key in sales</p></article>
+      </div>
+
+      <div class="subsection"><h3><span class="pill">Part 4</span> Advanced SQL</h3>
+        <article class="exercise"><h4>13. Categories with an average sale amount above 200</h4><pre><code>SELECT p.category AS Category,
+       AVG(s.amount) AS Average_Amount
+FROM products p
+INNER JOIN sales s
+    ON p.product_id = s.product_id
+GROUP BY p.category
+HAVING AVG(s.amount) &gt; 200;</code></pre><p class="status review">Check this: category belongs to products, so join products to sales and group by category. HAVING filters aggregated groups.</p></article>
+        <article class="exercise"><h4>14. Rank products by total revenue</h4><pre><code>SELECT p.name AS Product,
+       SUM(s.amount) AS Revenue,
+       RANK() OVER (ORDER BY SUM(s.amount) DESC) AS Revenue_Rank
+FROM products p
+INNER JOIN sales s
+    ON p.product_id = s.product_id
+GROUP BY p.product_id, p.name;</code></pre><p class="status good">Correct window-function idea</p></article>
+        <article class="exercise"><h4>15. Running total ordered by sale date</h4><pre><code>SELECT sale_id,
+       sale_date,
+       amount,
+       SUM(amount) OVER (
+           ORDER BY sale_date, sale_id
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+       ) AS Running_Total
+FROM sales
+ORDER BY sale_date, sale_id;</code></pre><p class="status review">Check this: do not GROUP BY sale_id or use SUM(amount) as the row's amount. A running total adds each sale row to the previous rows.</p></article>
+      </div>
+    </section>
+
+    <section id="excel" class="section">
+      <div class="section-heading"><div><p class="eyebrow">03 / SPREADSHEETS</p><h2>Microsoft Excel practice</h2><p class="section-intro">Lookups, conditional calculations, logic and spreadsheet features.</p></div><span class="section-number">03</span></div>
+      <div class="subsection"><h3><span class="pill">Part 1</span> Lookups</h3>
+        <article class="exercise"><h4>1. Find the price of “Marker”</h4><pre><code>=INDEX(E2:E11, MATCH("Marker", B2:B11, 0))</code></pre><p class="status good">Correct if column B contains product names and column E contains prices.</p></article>
+        <article class="exercise"><h4>2. Find the product priced at ₹35; otherwise return “Out of stock”</h4><pre><code>=XLOOKUP(35, E2:E11, B2:B11, "Out of stock")</code></pre><p class="status good">Correct if prices are in E and product names are in B.</p></article>
+        <article class="exercise"><h4>3. Find the category of “Chips”</h4><pre><code>=INDEX(C2:C11, MATCH("Chips", B2:B11, 0))</code></pre><p class="status good">Correct if categories are in C.</p></article>
+        <article class="exercise"><h4>4. Find the customer for Order_ID 1005</h4><pre><code>=INDEX(F2:F11, MATCH(1005, A2:A11, 0))</code></pre><p class="status good">Correct if order IDs are in A and customer names are in F.</p></article>
+      </div>
+      <div class="subsection"><h3><span class="pill">Part 2</span> Sums &amp; counts</h3>
+        <article class="exercise"><h4>5. Total quantity of Stationery products</h4><pre><code>=SUMIFS(D2:D11, C2:C11, "Stationery")</code></pre><p class="status good">Correct for summing quantities in D by category in C.</p></article>
+        <article class="exercise"><h4>6. Total amount where quantity is greater than 5</h4><pre><code>=SUMIF(D2:D11, "&gt;5", E2:E11)</code></pre><p class="status good">Correct if D is quantity and E is amount.</p></article>
+        <article class="exercise"><h4>7. Count orders from Snacks</h4><pre><code>=COUNTIF(C2:C11, "Snacks")</code></pre><p class="status good">Correct; COUNTIF is sufficient for one criterion.</p></article>
+        <article class="exercise"><h4>8. Count orders from customer Modassir</h4><pre><code>=COUNTIF(F2:F11, "Modassir")</code></pre><p class="status good">Correct if customer names are in F.</p></article>
+      </div>
+      <div class="subsection"><h3><span class="pill">Part 3</span> Logic &amp; text</h3>
+        <article class="exercise"><h4>9. Nested IF: Bulk, Medium or Small</h4><pre><code>=IF(D2&gt;=10, "Bulk", IF(D2&gt;=5, "Medium", "Small"))</code></pre><p class="status good">Correct</p></article>
+        <article class="exercise"><h4>10. IFS version of the quantity formula</h4><pre><code>=IFS(D2&gt;=10, "Bulk", D2&gt;=5, "Medium", TRUE, "Small")</code></pre><p class="status review">This formula was placed under Task 11 in your original notes. It belongs here for Task 10.</p></article>
+        <article class="exercise"><h4>11. Combine product name and category with a hyphen</h4><pre><code>=B2 &amp; " - " &amp; C2</code></pre><p class="status review">Your original answer repeated the IFS formula. Use concatenation to combine the text values.</p></article>
+        <article class="exercise"><h4>12. Extract the first three characters of the product name</h4><pre><code>=LEFT(B2, 3)</code></pre><p class="status good">Correct</p></article>
+      </div>
+      <div class="subsection"><h3><span class="pill">Part 4</span> Spreadsheet concepts</h3>
+        <article class="exercise"><h4>13. Create a PivotTable for total sales per category</h4><ol><li>Select the data range, including column headers.</li><li>Choose <strong>Insert → PivotTable</strong>.</li><li>Confirm the range and choose where the PivotTable should appear.</li><li>Drag <strong>Category</strong> into Rows.</li><li>Drag <strong>Sales Amount</strong> (or the relevant amount/price field) into Values.</li><li>Open Value Field Settings and select <strong>Sum</strong> if Excel does not choose it automatically.</li></ol><p class="status review">Your steps were mostly right. Use the actual sales amount field for “Total Sales,” rather than price if the task refers to transaction totals.</p></article>
+        <article class="exercise"><h4>14. Highlight quantities greater than 10 in green</h4><ol><li>Select the quantity cells.</li><li>Go to <strong>Home → Conditional Formatting → Highlight Cells Rules → Greater Than</strong> (or choose New Rule).</li><li>Enter <strong>10</strong>.</li><li>Choose a green fill format.</li><li>Click OK.</li></ol><p class="status good">Your approach was correct; choose the green formatting and confirm with OK.</p></article>
+        <article class="exercise"><h4>15. Create a Yes/No dropdown using Data Validation</h4><ol><li>Select the cell or range where the dropdown is needed.</li><li>Go to <strong>Data → Data Validation</strong>.</li><li>Under Allow, choose <strong>List</strong>.</li><li>In Source, type <code>Yes,No</code>.</li><li>Make sure the in-cell dropdown option is enabled, then click OK.</li></ol><p class="status review">Revision task: practise this once in Excel so you remember the menu path.</p></article>
+      </div>
+    </section>
+
+    <section id="python" class="section">
+      <div class="section-heading"><div><p class="eyebrow">04 / PROGRAMMING</p><h2>Python exam practice</h2><p class="section-intro">Fundamentals, loops, dictionaries, functions and pandas.</p></div><span class="section-number">04</span></div>
+      <article class="exercise"><h4>1. Calculate total price</h4><pre><code>price = 50
+quantity = 3
+print("Total:", price * quantity)</code></pre><p class="output">Output: <code>Total: 150</code></p><p class="status good">Correct</p></article>
+      <article class="exercise"><h4>2. Print each sale with a numbered label</h4><pre><code>sales = [100, 200, 150, 300, 250]
+
+for i, sale in enumerate(sales, start=1):
+    print(f"Sale {i}: {sale}")</code></pre><p class="status good">Correct</p></article>
+      <article class="exercise"><h4>3. Loop through a product-price dictionary</h4><pre><code>products = {"Pen": 10, "Notebook": 50, "Marker": 25}
+
+for product, price in products.items():
+    print(f"The price of {product} is {price}")</code></pre><p class="status good">Correct</p></article>
+      <article class="exercise"><h4>4. Create and call a calculate_total function</h4><pre><code>def calculate_total(price, quantity):
+    return price * quantity
+
+result = calculate_total(50, 3)
+print(result)</code></pre><p class="status good">Correct — the function returns the product of price and quantity.</p></article>
+      <article class="exercise"><h4>5. Create and print a pandas DataFrame</h4><pre><code>import pandas as pd
+
+data = {
+    "Product": ["Pen", "Notebook"],
+    "Price": [10, 50]
+}
+
+df = pd.DataFrame(data)
+print(df)</code></pre><p class="status review">Your original code created the DataFrame but did not print it. Add <code>print(df)</code> to complete the task.</p></article>
+      <article class="exercise"><h4>6. Filter rows where Price is greater than 20</h4><pre><code>filtered_df = df[df["Price"] &gt; 20]
+print(filtered_df)</code></pre><p class="status good">Correct</p></article>
+    </section>
+
+    <section id="csc" class="section">
+      <div class="section-heading"><div><p class="eyebrow">05 / SCHOLARSHIP</p><h2>CSC review</h2><p class="section-intro">Chinese vocabulary, research proposal practice and application tracking.</p></div><span class="section-number">05</span></div>
+      <div class="subsection"><h3>Chinese vocabulary review</h3><p class="muted">Your notes currently list pinyin and meanings. Add the Chinese characters and tone marks as a follow-up exercise.</p>
+        <div class="table-wrap"><table><thead><tr><th>Pinyin</th><th>Chinese</th><th>English meaning</th></tr></thead><tbody>
+          <tr><td>wǒ</td><td>我</td><td>I, me</td></tr><tr><td>nǐ</td><td>你</td><td>you</td></tr><tr><td>hǎo</td><td>好</td><td>good</td></tr><tr><td>Zhōng / zhōng</td><td>中</td><td>middle; in 中国 (Zhōngguó), China</td></tr><tr><td>rén</td><td>人</td><td>person</td></tr><tr><td>qián</td><td>钱</td><td>money</td></tr><tr><td>qián</td><td>前</td><td>front; before</td></tr><tr><td>chē</td><td>车</td><td>vehicle; car</td></tr><tr><td>ài</td><td>爱</td><td>to love</td></tr><tr><td>cóng</td><td>从</td><td>from</td></tr><tr><td>suì</td><td>岁</td><td>years old</td></tr><tr><td>qù</td><td>去</td><td>to go</td></tr><tr><td>lái</td><td>来</td><td>to come</td></tr><tr><td>zài</td><td>在</td><td>at; in; located at</td></tr><tr><td>wǒ jiào Modassir</td><td>我叫 Modassir</td><td>My name is Modassir</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="subsection"><h3>Research proposal practice</h3>
+        <article class="exercise"><h4>Read the finalized proposal aloud</h4><p>Progress note: “Read.”</p><p class="muted">Next step: practise explaining the research problem, proposed approach, and why the professor’s research aligns with your interests without reading every sentence.</p></article>
+        <article class="exercise"><h4>Three-sentence proposal summary</h4><blockquote>This research proposal presents my academic background in Information Technology and Computer Applications, along with my experience in Java and MySQL. I am continuing to develop my skills in data analytics while preparing for further study in software-related research. It also explains my motivation to study in China and pursue research at a university whose academic interests align with my goals.</blockquote><p class="muted">Edited for clarity while preserving the main points of your original summary. Make sure every claim matches the final proposal.</p></article>
+      </div>
+      <div class="subsection"><h3>CSC document checklist</h3>
+        <div class="checklist"><label><input type="checkbox"> Review which application documents are already complete</label><label><input type="checkbox"> List pending documents and the right time to prepare each one</label><label><input type="checkbox"> Confirm university-specific requirements and deadlines</label><label><input type="checkbox"> Practise the finalized research proposal summary</label></div>
+        <p class="muted">Progress note: “Almost done; the pending ones are waiting for the right time to do.” Update this checklist as documents are completed.</p>
+      </div>
+      <div class="subsection"><h3>Wuhan University of Technology (WUT) professors</h3>
+        <div class="professor-grid"><article class="professor-card"><p class="eyebrow">SHORTLISTED PROFESSOR 01</p><h4>Associate Professor Hu Wenhua</h4><p>Wuhan University of Technology</p><span class="status review">Research focus to verify</span></article><article class="professor-card"><p class="eyebrow">SHORTLISTED PROFESSOR 02</p><h4>Associate Professor Chen Zi</h4><p>Wuhan University of Technology</p><span class="status review">Research focus to verify</span></article></div>
+        <p class="muted">Your notes name both professors but do not specify their research areas. Add each professor’s verified research focus from their official university profile before using this in an application.</p>
+      </div>
+    </section>
+
+    <section id="review" class="section">
+      <div class="section-heading"><div><p class="eyebrow">06 / NEXT STEPS</p><h2>Priority review list</h2><p class="section-intro">Use this short list to decide what to practise next.</p></div><span class="section-number">06</span></div>
+      <div class="review-list">
+        <div class="review-item"><span class="review-index">01</span><div><h4>SQL: sorting, grouping and window functions</h4><p>Practise ORDER BY + LIMIT, grouping by an actual date, joining the correct tables for category, and running totals.</p></div></div>
+        <div class="review-item"><span class="review-index">02</span><div><h4>Excel: IFS, text joining and Data Validation</h4><p>Memorize the IFS formula, concatenate Product and Category, and build a Yes/No dropdown yourself.</p></div></div>
+        <div class="review-item"><span class="review-index">03</span><div><h4>Python: DataFrame output</h4><p>Remember to print the DataFrame when a task asks you to display it.</p></div></div>
+        <div class="review-item"><span class="review-index">04</span><div><h4>CSC: professor research alignment</h4><p>Verify each WUT professor’s research interests and connect them accurately to your proposal.</p></div></div>
+        <div class="review-item"><span class="review-index">05</span><div><h4>Chinese: characters and tones</h4><p>Review the characters, pinyin tone marks and meanings; expand the list to 15 distinct vocabulary items if required.</p></div></div>
+      </div>
+    </section>
+    <footer class="footer"><p>Personal learning record · Update after each practice session</p><a href="#overview">Back to top ↑</a></footer>
+  </main>
+</body>
+</html>
